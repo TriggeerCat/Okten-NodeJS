@@ -1,2 +1,4 @@
 ﻿.idea
 node_modules
+src/Lesson03/.env
+dist
