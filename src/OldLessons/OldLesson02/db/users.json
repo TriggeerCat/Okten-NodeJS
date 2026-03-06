@@ -1,0 +1,12 @@
+[
+  {
+    "id": 0,
+    "name": "Artem",
+    "skills": "Selling moskals by parts"
+  },
+  {
+    "id": 2,
+    "name": "Roman",
+    "criticising_java": true
+  }
+]
