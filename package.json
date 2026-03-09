@@ -96,7 +96,7 @@
     },
     "scripts": {
         "start": "rimraf dist && tsc-watch --onSuccess \"npm run watch:server\"",
-        "watch:server": "ts-node src/Lesson03/main.ts --watch"
+        "watch:server": "ts-node src/Lesson04/main.ts --watch"
     },
     "repository": {
         "type": "git",
