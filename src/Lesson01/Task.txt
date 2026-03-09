@@ -1,0 +1,3 @@
+﻿https://github.com/OktenSchool/nodejs/blob/lesson1-hw/emails.txt
+
+Є ось такий файл... ваша задача записати в новий файл тільки email'ли з доменом gmail.com (Хеш то що з ліва записувати не потрібно)
