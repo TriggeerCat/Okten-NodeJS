@@ -2,7 +2,7 @@
 import { ApiError } from "../errors/api.error";
 import { Auth } from "../interfaces/auth.interface";
 import { UserCreateDTO } from "../interfaces/user.interface";
-import { tokenRepository } from "../repositories/token.repository";
+// import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
@@ -14,7 +14,7 @@ class AuthService {
         const password = await passwordService.hashPassword(user.password);
         const newUser = await userRepository.create({ ...user, password });
         const tokens = tokenService.generateTokens({ userId: newUser._id, role: newUser.role });
-        await tokenRepository.create({ ...tokens, _userId: newUser._id });
+        // await tokenRepository.create({ ...tokens, _userId: newUser._id });
 
         return { user: newUser, tokens };
     }
@@ -25,7 +25,7 @@ class AuthService {
         const isPasswordValid = await passwordService.comparePassword(dto.password, user.password);
         if (!isPasswordValid) throw new ApiError("Email or password is not valid", STATUS_CODE.UNAUTHORIZED);
         const tokens = tokenService.generateTokens({ userId: user._id, role: user.role });
-        await tokenRepository.create({ ...tokens, _userId: user._id });
+        // await tokenRepository.create({ ...tokens, _userId: user._id });
 
         return { user, tokens };
     }

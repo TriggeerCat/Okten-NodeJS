@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/", userController.getAll);
 router.get("/:id", commonMiddleware.isIdValid("id"), userController.getOne);
-router.post("/", commonMiddleware.validateBody(UserValidator.create), userController.create);
+// router.post("/", commonMiddleware.validateBody(UserValidator.create), userController.create);
 router.put(
     "/:id",
     commonMiddleware.isIdValid("id"),
