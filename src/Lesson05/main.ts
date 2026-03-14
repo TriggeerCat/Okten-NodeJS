@@ -1,4 +1,4 @@
-﻿import express, { Request, Response } from "express";
+﻿import express, { NextFunction, Request, Response } from "express";
 import * as mongoose from "mongoose";
 
 import config from "./configs/config";
@@ -10,10 +10,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", apiRouter);
 
-app.use("/", (err: ApiError, req: Request, res: Response) => {
+app.use("/", (err: ApiError, req: Request, res: Response, next: NextFunction) => {
     const status = err.status || 500;
     const message = err.message || "Something went wrong";
-    console.log("Error here main");
     res.status(status).json({ status, message });
 });
 
@@ -31,8 +30,8 @@ const dbConnection = async () => {
             await mongoose.connect(config.MONGO_URI);
             dbCon = true;
             console.log("Connection successful");
-        } catch (e) {
-            console.log("Connection failed. Trying to reconnect in 3 seconds. Error:", e);
+        } catch {
+            console.log("Connection failed. Trying to reconnect in 3 seconds.");
             await new Promise((resolve) => setTimeout(resolve, 3000));
         }
     }

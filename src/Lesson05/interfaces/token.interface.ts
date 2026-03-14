@@ -1,7 +1,7 @@
-﻿import { RolesEnum } from "../enums/roles.enum";
+﻿import { RoleEnum } from "../enums/role.enum";
 import { Base } from "./base.interface";
 
-export interface Token extends Base {
+export interface Tokens extends Base {
     _id: string;
     accessToken: string;
     refreshToken: string;
@@ -10,7 +10,9 @@ export interface Token extends Base {
 
 export interface TokenPayload {
     userId: string;
-    role: RolesEnum;
+    role: RoleEnum;
 }
 
-export type TokenPair = Pick<Token, "accessToken" | "refreshToken">;
+export type TokensDTO = Pick<Tokens, "accessToken" | "refreshToken" | "_userId">;
+export type TokenPair = Pick<Tokens, "accessToken" | "refreshToken">;
+export type RefreshToken = Pick<Tokens, "refreshToken">;

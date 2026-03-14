@@ -1,5 +1,6 @@
-﻿import { StatusCodesEnum } from "../enums/status-codes.enum";
+﻿import { StatusCodeEnum } from "../enums/status-code.enum";
 import { ApiError } from "../errors/api.error";
+import { Auth } from "../interfaces/auth.interface";
 import { UserCreateDTO } from "../interfaces/user.interface";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
@@ -18,10 +19,11 @@ class AuthService {
         return { user: newUser, tokens };
     }
 
-    public async signIn(dto: any) {
+    public async signIn(dto: Auth) {
         const user = await userService.getByEmail(dto.email);
         const isPasswordValid = await passwordService.comparePassword(dto.password, user?.password ?? "");
-        if (!isPasswordValid || !user) throw new ApiError("Invalid email or password", StatusCodesEnum.UNAUTHORIZED);
+        if (!isPasswordValid || !user) throw new ApiError("Invalid email or password", StatusCodeEnum.UNAUTHORIZED);
+        if (user?.isActive === false) throw new ApiError("User is not active", StatusCodeEnum.UNAUTHORIZED);
         const tokens = tokenService.generateTokens({
             userId: user._id,
             role: user.role

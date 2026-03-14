@@ -1,22 +1,21 @@
 ﻿import jwt from "jsonwebtoken";
-import { Token } from "path-to-regexp";
 
 import config from "../configs/config";
-import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { StatusCodeEnum } from "../enums/status-code.enum";
 import { ApiError } from "../errors/api.error";
-import { TokenPayload } from "../interfaces/token.interface";
+import { TokenPair, TokenPayload, Tokens, TokensDTO } from "../interfaces/token.interface";
 import { TokenModel } from "../models/token.model";
 
 class TokenService {
-    public create(dto: any) {
+    public create(dto: TokensDTO) {
         return TokenModel.create(dto);
     }
 
-    public findByParams(params: Partial<Token>) {
+    public findByParams(params: Partial<Tokens>) {
         return TokenModel.findOne(params);
     }
 
-    public generateTokens(payload: TokenPayload) {
+    public generateTokens(payload: TokenPayload): TokenPair {
         const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
             expiresIn: config.JWT_ACCESS_LIFETIME
         });
@@ -29,18 +28,30 @@ class TokenService {
     }
 
     public verifyToken(token: string, type: "access" | "refresh"): TokenPayload {
-        let secret: string;
         switch (type) {
-            case "access":
-                secret = config.JWT_ACCESS_SECRET;
-                break;
-            case "refresh":
-                secret = config.JWT_REFRESH_SECRET;
-                break;
+            case "access": {
+                const secret = config.JWT_ACCESS_SECRET;
+                return jwt.verify(token, secret) as TokenPayload;
+            }
+            case "refresh": {
+                const secret = config.JWT_REFRESH_SECRET;
+                return jwt.verify(token, secret) as TokenPayload;
+            }
             default:
-                throw new ApiError("Invalid token type", StatusCodesEnum.BAD_REQUEST);
+                throw new ApiError("Invalid token type", StatusCodeEnum.BAD_REQUEST);
         }
-        return jwt.verify(token, secret) as TokenPayload;
+    }
+
+    public async doesTokenExist(token: string, type: "access" | "refresh") {
+        switch (type) {
+            case "access": {
+                return !!(await this.findByParams({ accessToken: token }));
+            }
+            case "refresh":
+                return !!(await this.findByParams({ refreshToken: token }));
+            default:
+                throw new ApiError("Invalid token type", StatusCodeEnum.BAD_REQUEST);
+        }
     }
 }
 

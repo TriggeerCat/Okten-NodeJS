@@ -1,4 +1,4 @@
-﻿import { RolesEnum } from "../enums/roles.enum";
+﻿import { RoleEnum } from "../enums/role.enum";
 import { Base } from "./base.interface";
 
 export interface User extends Base {
@@ -6,7 +6,7 @@ export interface User extends Base {
     name: string;
     email: string;
     password: string;
-    role: RolesEnum;
+    role: RoleEnum;
     isDeleted: boolean;
     isVerified: boolean;
     isActive: boolean;

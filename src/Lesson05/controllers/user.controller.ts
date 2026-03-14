@@ -1,35 +1,55 @@
-﻿import { Request, Response } from "express";
+﻿import { NextFunction, Request, Response } from "express";
 
-import { StatusCodesEnum } from "../enums/status-codes.enum";
-import { UserCreateDTO, UserUpdateDTO } from "../interfaces/user.interface";
+import { StatusCodeEnum } from "../enums/status-code.enum";
+import { UserUpdateDTO } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 
 class UserController {
-    public async getAll(req: Request, res: Response) {
-        const users = await userService.getAll();
-        res.status(StatusCodesEnum.OK).json(users);
+    public async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await userService.getAll();
+            res.status(StatusCodeEnum.OK).json(users);
+        } catch (e) {
+            next(e);
+        }
     }
 
-    public async getOne(req: Request, res: Response) {
-        const user = await userService.getById(req.params.id);
-        res.status(StatusCodesEnum.OK).json(user ?? {});
+    public async getOne(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = await userService.getById(req.params.id);
+            res.status(StatusCodeEnum.OK).json(user ?? { status: "User not found" });
+        } catch (e) {
+            next(e);
+        }
     }
 
-    public async create(req: Request, res: Response) {
-        const user = req.body as UserCreateDTO;
-        const newUser = await userService.create(user);
-        res.status(StatusCodesEnum.CREATED).json(newUser);
+    public async updateUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = req.body as UserUpdateDTO;
+            const updatedUser = await userService.updateUser(req.params.id, user);
+            res.status(StatusCodeEnum.OK).json(updatedUser);
+        } catch (e) {
+            next(e);
+        }
     }
 
-    public async update(req: Request, res: Response) {
-        const user = req.body as UserUpdateDTO;
-        const updatedUser = await userService.update(req.params.id, user);
-        res.status(StatusCodesEnum.OK).json(updatedUser);
+    public async updateActiveStatus(req: Request, res: Response, next: NextFunction) {
+        try {
+            const isActive = req.body.isActive as boolean;
+            const updatedUser = await userService.updateActiveStatus(req.params.id, isActive);
+            res.status(StatusCodeEnum.OK).json(updatedUser);
+        } catch (e) {
+            next(e);
+        }
     }
 
-    public async delete(req: Request, res: Response) {
-        await userService.delete(req.params.id);
-        res.status(StatusCodesEnum.NO_CONTENT).end();
+    public async delete(req: Request, res: Response, next: NextFunction) {
+        try {
+            await userService.delete(req.params.id);
+            res.status(StatusCodeEnum.NO_CONTENT).end();
+        } catch (e) {
+            next(e);
+        }
     }
 }
 

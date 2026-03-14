@@ -1,4 +1,4 @@
-﻿export enum StatusCodesEnum {
+﻿export enum StatusCodeEnum {
     OK = 200,
     CREATED = 201,
     NO_CONTENT = 204,
