@@ -2,16 +2,15 @@
 import { ObjectSchema } from "joi";
 import { isObjectIdOrHexString } from "mongoose";
 
-import { StatusCodeEnum } from "../enums/status-code.enum";
+import { STATUS_CODE } from "../enums/status-code.enum";
 import { ApiError } from "../errors/api.error";
 import { tokenService } from "../services/token.service";
 
 class CommonMiddleware {
     public validateId(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params;
-        console.log(id);
         if (!isObjectIdOrHexString(id)) {
-            next(new ApiError("Invalid id", StatusCodeEnum.BAD_REQUEST));
+            next(new ApiError("Invalid id", STATUS_CODE.BAD_REQUEST));
             return;
         }
         next();
@@ -24,7 +23,7 @@ class CommonMiddleware {
                 next();
             } catch (e) {
                 // @ts-expect-error e is definitely Joy.ValidationError, but checks for it don't work properly
-                next(new ApiError(e.details[0].message, StatusCodeEnum.BAD_REQUEST));
+                next(new ApiError(e.details[0].message, STATUS_CODE.BAD_REQUEST));
             }
         };
     }
@@ -33,7 +32,7 @@ class CommonMiddleware {
         return (req: Request, res: Response, next: NextFunction) => {
             const tokenPayload = tokenService.verifyToken(req.headers.authorization?.split(" ")[1] ?? " ", "access");
             if (tokenPayload.role !== role) {
-                next(new ApiError("Wrong role provided!", StatusCodeEnum.BAD_REQUEST));
+                next(new ApiError("Wrong role provided!", STATUS_CODE.BAD_REQUEST));
                 return;
             }
             next();

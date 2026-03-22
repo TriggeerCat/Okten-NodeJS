@@ -1,6 +1,6 @@
 ﻿import { NextFunction, Request, Response } from "express";
 
-import { StatusCodeEnum } from "../enums/status-code.enum";
+import { STATUS_CODE } from "../enums/status-code.enum";
 import { Auth } from "../interfaces/auth.interface";
 import { TokenPayload } from "../interfaces/token.interface";
 import { UserCreateDTO } from "../interfaces/user.interface";
@@ -13,7 +13,7 @@ class AuthController {
         try {
             const body = req.body as UserCreateDTO;
             const data = await authService.signUp(body);
-            res.status(StatusCodeEnum.CREATED).json(data);
+            res.status(STATUS_CODE.CREATED).json(data);
         } catch (e) {
             next(e);
         }
@@ -23,7 +23,7 @@ class AuthController {
         try {
             const dto = req.body as Auth;
             const data = await authService.signIn(dto);
-            res.status(StatusCodeEnum.OK).json(data);
+            res.status(STATUS_CODE.OK).json(data);
         } catch (e) {
             next(e);
         }
@@ -32,9 +32,9 @@ class AuthController {
     public async refresh(req: Request, res: Response, next: NextFunction) {
         try {
             const { userId, role } = res.locals.tokenPayload as TokenPayload;
-            const tokens = tokenService.generateTokens({ userId, role });
+            const tokens = tokenService.generateAuthTokens({ userId, role });
             await tokenService.create({ ...tokens, _userId: userId });
-            res.status(StatusCodeEnum.OK).json(tokens);
+            res.status(STATUS_CODE.OK).json(tokens);
         } catch (e) {
             next(e);
         }
@@ -44,7 +44,38 @@ class AuthController {
         try {
             const { userId } = res.locals.tokenPayload as TokenPayload;
             const user = await userService.getById(userId);
-            res.status(StatusCodeEnum.OK).json(user);
+            res.status(STATUS_CODE.OK).json(user);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async activate(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { activationToken } = req.params;
+            const user = await authService.activate(activationToken);
+            res.status(STATUS_CODE.OK).json(user);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async requestRecovery(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const user = await authService.requestRecovery(email);
+            res.status(STATUS_CODE.OK).json(user);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async recover(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { recoveryToken } = req.params;
+            const { password } = req.body;
+            const user = await authService.recover(recoveryToken, password);
+            res.status(STATUS_CODE.OK).json(user);
         } catch (e) {
             next(e);
         }

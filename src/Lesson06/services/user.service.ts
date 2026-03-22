@@ -1,6 +1,6 @@
-﻿import { StatusCodeEnum } from "../enums/status-code.enum";
+﻿import { STATUS_CODE } from "../enums/status-code.enum";
 import { ApiError } from "../errors/api.error";
-import { UserCreateDTO, UserUpdateDTO } from "../interfaces/user.interface";
+import { User, UserCreateDTO } from "../interfaces/user.interface";
 import { UserModel } from "../models/user.model";
 
 class UserService {
@@ -10,7 +10,7 @@ class UserService {
 
     public async getById(id: string) {
         const user = await UserModel.findById(id);
-        if (!user) throw new ApiError("User not found", StatusCodeEnum.NOT_FOUND);
+        if (!user) throw new ApiError("User not found", STATUS_CODE.NOT_FOUND);
         return user;
     }
 
@@ -22,27 +22,21 @@ class UserService {
         return UserModel.create(user);
     }
 
-    public async updateUser(id: string, newUser: UserUpdateDTO) {
+    public async updateById(id: string, newUser: Partial<User>) {
         const user = await UserModel.findByIdAndUpdate(id, newUser);
-        if (!user) throw new ApiError("User not found", StatusCodeEnum.NOT_FOUND);
-        return user;
-    }
-
-    public async updateActiveStatus(id: string, activity: boolean) {
-        const user = await UserModel.findByIdAndUpdate(id, { isActive: activity });
-        if (!user) throw new ApiError("User not found", StatusCodeEnum.NOT_FOUND);
+        if (!user) throw new ApiError("User not found", STATUS_CODE.NOT_FOUND);
         return user;
     }
 
     public async delete(id: string) {
         const user = await UserModel.findById(id);
-        if (!user) throw new ApiError("User not found", StatusCodeEnum.NOT_FOUND);
+        if (!user) throw new ApiError("User not found", STATUS_CODE.NOT_FOUND);
         await UserModel.findByIdAndDelete(id);
     }
 
     public async isEmailUnique(email: string) {
         const user = await this.getByEmail(email);
-        if (user) throw new ApiError("This email already exists", StatusCodeEnum.FORBIDDEN);
+        if (user) throw new ApiError("This email already exists", STATUS_CODE.FORBIDDEN);
     }
 }
 

@@ -10,6 +10,9 @@ const router = Router();
 router.post("/sign-up", commonMiddleware.validateBody(UserValidator.createUser), authController.signUp);
 router.post("/sign-in", authController.signIn);
 router.post("/refresh", authMiddleware.checkRefreshToken, authController.refresh);
+router.patch("/activate/:activationToken", authController.activate);
+router.post("/recover/", commonMiddleware.validateBody(UserValidator.checkEmail), authController.requestRecovery);
+router.patch("/recover/:recoveryToken", authController.recover);
 router.get("/me", authMiddleware.checkAccessToken, authController.me);
 
 export const authRouter = router;

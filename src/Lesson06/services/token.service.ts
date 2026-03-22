@@ -1,7 +1,7 @@
 ﻿import jwt from "jsonwebtoken";
 
-import config from "../configs/config";
-import { StatusCodeEnum } from "../enums/status-code.enum";
+import { STATUS_CODE } from "../enums/status-code.enum";
+import { ActionTokens, AuthTokens, getLifetimeByTokenType, getSecretByTokenType } from "../enums/token.enum";
 import { ApiError } from "../errors/api.error";
 import { TokenPair, TokenPayload, Tokens, TokensDTO } from "../interfaces/token.interface";
 import { TokenModel } from "../models/token.model";
@@ -15,42 +15,41 @@ class TokenService {
         return TokenModel.findOne(params);
     }
 
-    public generateTokens(payload: TokenPayload): TokenPair {
-        const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
-            expiresIn: config.JWT_ACCESS_LIFETIME
+    public generateAuthTokens(payload: TokenPayload): TokenPair {
+        const accessToken = jwt.sign(payload, getSecretByTokenType("access"), {
+            expiresIn: getLifetimeByTokenType("access")
         });
-
-        const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
-            expiresIn: config.JWT_REFRESH_LIFETIME
+        const refreshToken = jwt.sign(payload, getSecretByTokenType("refresh"), {
+            expiresIn: getLifetimeByTokenType("refresh")
         });
 
         return { accessToken, refreshToken };
     }
 
-    public verifyToken(token: string, type: "access" | "refresh"): TokenPayload {
-        switch (type) {
-            case "access": {
-                const secret = config.JWT_ACCESS_SECRET;
-                return jwt.verify(token, secret) as TokenPayload;
-            }
-            case "refresh": {
-                const secret = config.JWT_REFRESH_SECRET;
-                return jwt.verify(token, secret) as TokenPayload;
-            }
-            default:
-                throw new ApiError("Invalid token type", StatusCodeEnum.BAD_REQUEST);
+    public generateActionToken(payload: TokenPayload, type: ActionTokens) {
+        try {
+            return jwt.sign(payload, getSecretByTokenType(type), { expiresIn: getLifetimeByTokenType(type) });
+        } catch {
+            throw new ApiError("Invalid token type", STATUS_CODE.BAD_REQUEST);
         }
     }
 
-    public async doesTokenExist(token: string, type: "access" | "refresh") {
+    public verifyToken(token: string, type: AuthTokens | ActionTokens): TokenPayload {
+        try {
+            return jwt.verify(token, getSecretByTokenType(type)) as TokenPayload;
+        } catch (e) {
+            throw new ApiError(e?.toString() ?? "", STATUS_CODE.BAD_REQUEST);
+        }
+    }
+
+    public async doesTokenExist(token: string, type: AuthTokens) {
         switch (type) {
-            case "access": {
+            case "access":
                 return !!(await this.findByParams({ accessToken: token }));
-            }
             case "refresh":
                 return !!(await this.findByParams({ refreshToken: token }));
             default:
-                throw new ApiError("Invalid token type", StatusCodeEnum.BAD_REQUEST);
+                throw new ApiError("Invalid token type", STATUS_CODE.BAD_REQUEST);
         }
     }
 }

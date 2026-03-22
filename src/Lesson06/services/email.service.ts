@@ -5,6 +5,7 @@ import handlebars from "handlebars";
 import nodemailer, { Transporter } from "nodemailer";
 
 import config from "../configs/config";
+import { EmailData } from "../constants/email.constants";
 
 class EmailService {
     private readonly transporter: Transporter;
@@ -22,7 +23,7 @@ class EmailService {
         });
     }
 
-    private async _renderTemplate(templateName: string, context: Record<string, any>) {
+    private async _renderTemplate(template: string, context: Record<string, any>) {
         const layoutSource = await fs.readFile(
             path.join(process.cwd(), "src", "Lesson06", "templates", "base.hbs"),
             "utf-8"
@@ -30,7 +31,7 @@ class EmailService {
         const layoutTemplate = handlebars.compile(layoutSource);
 
         const templateSource = await fs.readFile(
-            path.join(process.cwd(), "src", "Lesson06", "templates", `${templateName}.hbs`),
+            path.join(process.cwd(), "src", "Lesson06", "templates", template),
             "utf-8"
         );
         const childTemplate = handlebars.compile(templateSource);
@@ -40,11 +41,11 @@ class EmailService {
         return layoutTemplate({ ...context, body: childHtml });
     }
 
-    public async sendEmail(to: string, subject: string, templateName: string, context: Record<string, any>) {
+    public async sendEmail(to: string, emailData: EmailData, context: Record<string, any>) {
         await this.transporter.sendMail({
             to,
-            subject,
-            html: await this._renderTemplate(templateName, context)
+            subject: emailData.subject,
+            html: await this._renderTemplate(emailData.template, context)
         });
     }
 }

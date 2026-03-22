@@ -18,4 +18,8 @@ export class UserValidator {
         name: this.name.required(),
         email: this.email.required()
     });
+
+    public static readonly checkEmail = joi.object({
+        email: this.email.required()
+    });
 }
