@@ -16,7 +16,7 @@ class UserController {
 
     public async getOne(req: Request, res: Response, next: NextFunction) {
         try {
-            const user = await userService.getById(req.params.id);
+            const user = await userService.getById(req.params.id as string);
             res.status(STATUS_CODE.OK).json(user ?? { status: "User not found" });
         } catch (e) {
             next(e);
@@ -26,7 +26,7 @@ class UserController {
     public async updateUser(req: Request, res: Response, next: NextFunction) {
         try {
             const user = req.body as UserUpdateDTO;
-            const updatedUser = await userService.updateById(req.params.id, user);
+            const updatedUser = await userService.updateById(req.params.id as string, user);
             res.status(STATUS_CODE.OK).json(updatedUser);
         } catch (e) {
             next(e);
@@ -36,7 +36,7 @@ class UserController {
     public async updateActiveStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const isActive = req.body.isActive as boolean;
-            const updatedUser = await userService.updateById(req.params.id, { isActive });
+            const updatedUser = await userService.updateById(req.params.id as string, { isActive });
             res.status(STATUS_CODE.OK).json(updatedUser);
         } catch (e) {
             next(e);
@@ -45,7 +45,7 @@ class UserController {
 
     public async delete(req: Request, res: Response, next: NextFunction) {
         try {
-            await userService.delete(req.params.id);
+            await userService.delete(req.params.id as string);
             res.status(STATUS_CODE.NO_CONTENT).end();
         } catch (e) {
             next(e);

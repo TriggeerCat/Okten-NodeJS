@@ -3,6 +3,3 @@
 dist
 mongo
 node_modules
-src/OldLessons/OldLesson03/.env
-src/OldLessons/OldLesson04/.env
-src/OldLessons/OldLesson05/.env

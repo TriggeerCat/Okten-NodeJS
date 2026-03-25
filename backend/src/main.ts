@@ -22,14 +22,12 @@ process.on("uncaughtException", (error) => {
 });
 
 const dbConnection = async () => {
-    let dbCon = false;
-
-    while (!dbCon) {
+    while (true) {
         try {
             console.log("Connecting to database");
             await mongoose.connect(config.MONGO_URI);
-            dbCon = true;
             console.log("Connection successful");
+            break;
         } catch {
             console.log("Connection failed. Trying to reconnect in 3 seconds.");
             await new Promise((resolve) => setTimeout(resolve, 3000));

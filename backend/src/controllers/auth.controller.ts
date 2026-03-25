@@ -3,7 +3,7 @@
 import { STATUS_CODE } from "../enums/status-code.enum";
 import { Auth } from "../interfaces/auth.interface";
 import { TokenPayload } from "../interfaces/token.interface";
-import { UserCreateDTO } from "../interfaces/user.interface";
+import { User, UserCreateDTO } from "../interfaces/user.interface";
 import { authService } from "../services/auth.service";
 import { tokenService } from "../services/token.service";
 import { userService } from "../services/user.service";
@@ -52,8 +52,10 @@ class AuthController {
 
     public async activate(req: Request, res: Response, next: NextFunction) {
         try {
-            const { activationToken } = req.params;
-            const user = await authService.activate(activationToken);
+            const activationToken = req.params.activationToken as string;
+            let user: User;
+            if (Array.isArray(activationToken)) user = await authService.activate(activationToken[0]);
+            else user = await authService.activate(activationToken);
             res.status(STATUS_CODE.OK).json(user);
         } catch (e) {
             next(e);
@@ -72,7 +74,7 @@ class AuthController {
 
     public async recover(req: Request, res: Response, next: NextFunction) {
         try {
-            const { recoveryToken } = req.params;
+            const recoveryToken = req.params.recoveryToken as string;
             const { password } = req.body;
             const user = await authService.recover(recoveryToken, password);
             res.status(STATUS_CODE.OK).json(user);

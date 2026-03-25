@@ -1,5 +1,19 @@
 ﻿services:
-  database-mongo:
+  app:
+    build:
+      context: .
+    ports:
+      - "12250:12250"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: on-failure
+    command: >
+      sh -c "npm start"
+
+  database:
     image: mongo:latest
     environment:
       - MONGO_INITDB_DATABASE=database
@@ -7,7 +21,7 @@
       - MONGO_INITDB_ROOT_PASSWORD=verysecretpassword
     restart: on-failure
     volumes:
-      - ./mongo/data:/data/db
+      - ./mongo:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     ports:
       - "27017:27017"

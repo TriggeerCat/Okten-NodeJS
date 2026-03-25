@@ -16,7 +16,6 @@
         "cookie-signature": "^1.2.2",
         "debug": "^4.4.3",
         "depd": "^2.0.0",
-        "dotenv": "^17.2.3",
         "dunder-proto": "^1.0.1",
         "ee-first": "^1.1.1",
         "encodeurl": "^2.0.0",
@@ -80,7 +79,6 @@
     },
     "devDependencies": {
         "@types/express": "^5.0.3",
-        "@types/mongoose": "^5.11.97",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/bcrypt": "^6.0.0",
         "@types/nodemailer": "^7.0.11",
@@ -99,7 +97,7 @@
     },
     "scripts": {
         "start": "rimraf dist && tsc-watch --onSuccess \"npm run watch:server\"",
-        "watch:server": "ts-node src/Lesson06/main.ts --watch"
+        "watch:server": "ts-node src/main.ts --watch"
     },
     "repository": {
         "type": "git",
