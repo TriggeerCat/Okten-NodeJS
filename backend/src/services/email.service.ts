@@ -24,16 +24,10 @@ class EmailService {
     }
 
     private async _renderTemplate(template: string, context: Record<string, any>) {
-        const layoutSource = await fs.readFile(
-            path.join(process.cwd(), "src", "Lesson06", "templates", "base.hbs"),
-            "utf-8"
-        );
+        const layoutSource = await fs.readFile(path.join(process.cwd(), "src", "templates", "base.hbs"), "utf-8");
         const layoutTemplate = handlebars.compile(layoutSource);
 
-        const templateSource = await fs.readFile(
-            path.join(process.cwd(), "src", "Lesson06", "templates", template),
-            "utf-8"
-        );
+        const templateSource = await fs.readFile(path.join(process.cwd(), "src", "templates", template), "utf-8");
         const childTemplate = handlebars.compile(templateSource);
 
         const childHtml = childTemplate(context);
