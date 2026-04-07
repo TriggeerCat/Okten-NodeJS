@@ -1,7 +1,7 @@
 ﻿import joi from "joi";
 
 export class UserValidator {
-    private static readonly name = joi.string().min(3).max(10).trim();
+    private static readonly userName = joi.string().min(3).max(10).trim();
     private static readonly email = joi.string().email().trim();
     private static readonly password = joi
         .string()
@@ -9,13 +9,13 @@ export class UserValidator {
         .trim();
 
     public static readonly createUser = joi.object({
-        name: this.name.required(),
+        name: this.userName.required(),
         email: this.email.required(),
         password: this.password.required()
     });
 
     public static readonly updateUser = joi.object({
-        name: this.name.required(),
+        name: this.userName.required(),
         email: this.email.required()
     });
 

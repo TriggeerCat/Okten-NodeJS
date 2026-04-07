@@ -1,20 +1,34 @@
 import React, {useEffect, useState} from 'react';
-import {User} from "./interfaces/user.interface";
+import {LoginComponent} from "./components/login.component";
+import {PizzaListComponent} from "./components/pizza-list.component";
 import axios from "axios";
 
 function App() {
-    const [users, setUsers] = useState<User[]>([]);
+    localStorage.setItem("accessToken", "");
+
+    const [accessToken, setAccessToken] = useState<string>(localStorage.getItem("accessToken") ?? "");
+    const [tokenValidity, setTokenValidity] = useState<boolean>(false)
 
     useEffect(() => {
-        axios.get("/api/users").then(({data}) => setUsers(data));
-    }, []);
+        if (!accessToken) {
+            setTokenValidity(false);
+            return;
+        }
 
-    console.log(users);
+        axios.get('/api/auth/me', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        }).then(() => {
+            setTokenValidity(true);
+        }).catch(() => {
+            setTokenValidity(false)
+        });
+    }, [accessToken]);
 
     return (
         <div>
-            <h1>Users:</h1>
-            {users.map((value) => <div key={value._id}>{JSON.stringify(value)}</div>)}
+            {tokenValidity ? <PizzaListComponent /> : <LoginComponent setAccessToken={setAccessToken} />}
         </div>
     );
 }
