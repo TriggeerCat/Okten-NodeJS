@@ -1,4 +1,6 @@
-﻿import express, { NextFunction, Request, Response } from "express";
+﻿import path from "node:path";
+
+import express, { NextFunction, Request, Response } from "express";
 import * as mongoose from "mongoose";
 
 import config from "./configs/config";
@@ -15,6 +17,8 @@ app.use("/", (err: ApiError, req: Request, res: Response, next: NextFunction) =>
     const message = err.message || "Something went wrong";
     res.status(status).json({ status, message });
 });
+
+app.use("/media", express.static(path.join(process.cwd(), "upload")));
 
 process.on("uncaughtException", (error) => {
     console.log("Uncaught Exception", error);

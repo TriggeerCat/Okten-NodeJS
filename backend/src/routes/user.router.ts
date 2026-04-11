@@ -1,5 +1,6 @@
 ﻿import { Router } from "express";
 
+import { upload } from "../configs/multer.config";
 import { userController } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
@@ -26,5 +27,6 @@ router.put(
     userController.updateActiveStatus
 );
 router.delete("/:id", authMiddleware.checkAccessToken, commonMiddleware.validateId, userController.delete);
+router.patch("/change-pfp", authMiddleware.checkAccessToken, upload.single("pfp"), userController.uploadPfp);
 
 export const userRouter = router;

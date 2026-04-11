@@ -1,6 +1,8 @@
 ﻿import { NextFunction, Request, Response } from "express";
 
 import { STATUS_CODE } from "../enums/status-code.enum";
+import { ApiError } from "../errors/api.error";
+import { TokenPayload } from "../interfaces/token.interface";
 import { UserUpdateDTO } from "../interfaces/user.interface";
 import { userService } from "../services/user.service";
 
@@ -47,6 +49,19 @@ class UserController {
         try {
             await userService.delete(req.params.id as string);
             res.status(STATUS_CODE.NO_CONTENT).end();
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async uploadPfp(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { userId } = res.locals.tokenPayload as TokenPayload;
+
+            if (!req.file) next(new ApiError("No file uploaded", STATUS_CODE.BAD_REQUEST));
+            const updatedUser = await userService.updateById(userId, { pfp: req.file?.path ?? "" });
+
+            res.status(STATUS_CODE.OK).json(updatedUser);
         } catch (e) {
             next(e);
         }

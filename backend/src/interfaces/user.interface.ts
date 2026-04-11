@@ -7,6 +7,7 @@ export interface User extends Base {
     email: string;
     password: string;
     role: RoleEnum;
+    pfp: string;
     isDeleted: boolean;
     isVerified: boolean;
     isActive: boolean;

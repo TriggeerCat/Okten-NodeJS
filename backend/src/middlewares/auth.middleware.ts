@@ -22,7 +22,7 @@ class AuthMiddleware {
             next(new ApiError("Invalid token provided", STATUS_CODE.UNAUTHORIZED));
             return;
         }
-        if (req.res?.locals) req.res.locals.tokenPayload = tokenPayload;
+        if (res.locals) res.locals.tokenPayload = tokenPayload;
         next();
     }
 
