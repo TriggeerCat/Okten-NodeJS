@@ -28,6 +28,18 @@ class CommonMiddleware {
         };
     }
 
+    public validateQuery(validator: ObjectSchema) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                (req as any).validQuery = await validator.validateAsync(req.query);
+                next();
+            } catch (e) {
+                // @ts-expect-error e is definitely Joy.ValidationError, but checks for it don't work properly
+                next(new ApiError(e.details[0].message, STATUS_CODE.BAD_REQUEST));
+            }
+        };
+    }
+
     public validateRoleFromToken(role: string) {
         return (req: Request, res: Response, next: NextFunction) => {
             const tokenPayload = tokenService.verifyToken(req.headers.authorization?.split(" ")[1] ?? " ", "access");

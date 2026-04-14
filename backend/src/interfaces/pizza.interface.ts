@@ -5,4 +5,11 @@
     size: number;
 }
 
+export interface PizzaQuery {
+    pageSize: number;
+    page: number;
+    search?: string;
+    order?: string;
+}
+
 export type PizzaDTO = Pick<Pizza, "name" | "price" | "size">;
